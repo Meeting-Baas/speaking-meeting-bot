@@ -229,8 +229,19 @@ def create_app() -> FastAPI:
     return app
 
 
-def start_server(host: str = "0.0.0.0", port: int = 8766, local_dev: bool = False):
-    """Start the WebSocket server"""
+def start_server(host: str = "0.0.0.0", port: int = 7014, local_dev: bool = False):
+    """Start the Uvicorn server for the FastAPI application."""
+    # If the PORT environment variable is set, use it; otherwise, use the default.
+    try:
+        server_port = int(os.getenv("PORT", str(port)))
+    except ValueError:
+        logger.error(
+            f"Invalid value for PORT environment variable: {os.getenv('PORT')}. "
+            f"Falling back to default port {port}."
+        )
+        server_port = port
+    logger.info(f"Starting server on {host}:{server_port}")
+
     # Global variables for ngrok URL tracking
     NGROK_URLS = []
     NGROK_URL_INDEX = 0
@@ -256,7 +267,7 @@ def start_server(host: str = "0.0.0.0", port: int = 8766, local_dev: bool = Fals
             )
         print("\n")
 
-    logger.info(f"Starting WebSocket server on {host}:{port}")
+    logger.info(f"Starting WebSocket server on {host}:{server_port}")
 
     # Pass the local_dev flag as a command-line argument to the uvicorn process
     args = [
@@ -267,7 +278,7 @@ def start_server(host: str = "0.0.0.0", port: int = 8766, local_dev: bool = Fals
         "--host",
         host,
         "--port",
-        str(port),
+        str(server_port),
     ]
 
     if local_dev:
@@ -289,7 +300,12 @@ def start_server(host: str = "0.0.0.0", port: int = 8766, local_dev: bool = Fals
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the MeetingBaas Bot API server")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to")
-    parser.add_argument("--port", type=int, default=8766, help="Port to listen on")
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.getenv("PORT", "7014")), # Read from env var, fallback to 7014
+        help="Port to listen on",
+    )
     parser.add_argument(
         "--local-dev",
         action="store_true",

@@ -139,8 +139,8 @@ poetry run proxy
 To allow MeetingBaas to communicate with your bot, you need to expose the local server using Ngrok.
 
 ```bash
-# Run the Ngrok HTTP tunnel on port 8766
-ngrok http 8766
+# Run the Ngrok HTTP tunnel on port ${PORT}
+ngrok http ${PORT}
 ```
 
 Ngrok will provide you with a public URL that can be used by MeetingBaas to communicate with your local bot.

@@ -232,7 +232,7 @@ There are two ways to run the server:
 
 ```bash
 # Standard mode
-poetry run uvicorn app:app --reload --host 0.0.0.0 --port 8766
+poetry run uvicorn app:app --reload --host 0.0.0.0 --port ${PORT}
 
 # Local development mode with ngrok auto-configuration
 poetry run python run.py --local-dev
@@ -273,7 +273,7 @@ The local development mode simplifies WebSocket setup by:
 The WebSocket URL is optional in all cases. The server determines the appropriate URL based on the priority list described in the [WebSocket URL Resolution](#websocket-url-resolution) section:
 
 ```bash
-curl -X POST http://localhost:8766/run-bots \
+curl -X POST http://localhost:${PORT}/run-bots \
   -H "Content-Type: application/json" \
   -d '{
     "meeting_url": "https://meet.google.com/xxx-yyyy-zzz",
@@ -285,12 +285,12 @@ curl -X POST http://localhost:8766/run-bots \
 You can still manually specify a WebSocket URL if needed:
 
 ```bash
-curl -X POST http://localhost:8766/run-bots \
+curl -X POST http://localhost:${PORT}/run-bots \
   -H "Content-Type: application/json" \
   -d '{
     "meeting_url": "https://meet.google.com/xxx-yyyy-zzz",
     "personas": ["interviewer"],
-    "websocket_url": "ws://your-custom-websocket-url:8766",
+    "websocket_url": "ws://your-custom-websocket-url:${PORT}",
     "meeting_baas_api_key": "your-api-key"
   }'
 ```
@@ -357,7 +357,7 @@ poetry install
 poetry run python -m grpc_tools.protoc --proto_path=./protobufs --python_out=./protobufs frames.proto
 
 # Run the API server with hot reload
-poetry run uvicorn app:app --reload --host 0.0.0.0 --port 8766
+poetry run uvicorn app:app --reload --host 0.0.0.0 --port ${PORT}
 ```
 
 ### Local Testing with Multiple Bots
@@ -366,10 +366,10 @@ For local development and testing with multiple bots, you'll need two terminals:
 
 ```bash
 # Terminal 1: Start the API server
-poetry run uvicorn app:app --reload --host 0.0.0.0 --port 8766
+poetry run uvicorn app:app --reload --host 0.0.0.0 --port ${PORT}
 
 # Terminal 2: Start ngrok to expose your local server
-ngrok http 8766
+ngrok http ${PORT}
 ```
 
 Once ngrok is running, it will provide you with a public URL that the server will use for WebSocket connections in local development mode.
@@ -414,15 +414,15 @@ For production deployment, always set the BASE_URL environment variable:
 export BASE_URL=https://your-server-domain.com
 
 # Run the API server in production mode
-poetry run uvicorn app:app --host 0.0.0.0 --port 8766
+poetry run uvicorn app:app --host 0.0.0.0 --port ${PORT}
 ```
 
 ### API Documentation
 
 Once the server is running, you can access:
 
-- Interactive API docs: `http://localhost:8766/docs`
-- OpenAPI specification: `http://localhost:8766/openapi.json`
+- Interactive API docs: `http://localhost:${PORT}/docs`
+- OpenAPI specification: `http://localhost:${PORT}/openapi.json`
 
 ## Future Development
 

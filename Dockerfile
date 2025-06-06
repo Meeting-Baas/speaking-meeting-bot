@@ -32,8 +32,9 @@ ENV PYTHONPATH="/app:${PYTHONPATH}"
 RUN poetry run python -m grpc_tools.protoc --proto_path=./protobufs --python_out=./protobufs frames.proto
 
 # Environment variables
-ENV PORT=8766
+ENV PORT=7014
 
-# Run the application
-CMD ["poetry", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8766"]
+EXPOSE ${PORT}
+
+CMD ["poetry", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "${PORT}"]
 

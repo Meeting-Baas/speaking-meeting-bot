@@ -1,12 +1,9 @@
 version: "3"
 
-agent:
-    authtoken: YOUR_AUTH_TOKEN
-
 tunnels:
   proxy1:
     proto: http
-    addr: 8766
+    addr: 7014
   proxy2:
     proto: http
-    addr: 8768
+    addr: 7015

@@ -9,10 +9,10 @@ primary_region = 'cdg'
 [build]
 
 [env]
-  PORT = '8766'
+  PORT = "${PORT}"
 
 [http_service]
-  internal_port = 8766
+  internal_port = ${PORT}
   force_https = true
   auto_stop_machines = 'off'
   auto_start_machines = true
@@ -23,3 +23,7 @@ primary_region = 'cdg'
   memory = '2gb'
   cpu_kind = 'shared'
   cpus = 2
+
+[[services]]
+  internal_port = ${PORT}
+  processes = ["app"]

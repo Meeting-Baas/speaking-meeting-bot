@@ -9,6 +9,9 @@ from fastapi import HTTPException, Request
 from meetingbaas_pipecat.utils.logger import logger
 from utils.url import convert_http_to_ws_url
 
+# Get the configured server port from environment variable, default to 8766
+CONFIGURED_PORT = os.getenv("PORT", "7014")
+
 # Global variables for ngrok URL tracking
 NGROK_URLS = []
 NGROK_URL_INDEX = 0
@@ -69,10 +72,10 @@ def load_ngrok_urls() -> List[str]:
                     logger.info(f"🔍 Tunnel: {public_url} -> {addr}")
 
                     if public_url and public_url.startswith("https://"):
-                        # Check if this tunnel points to port 8766
-                        if addr and "8766" in addr:
+                        # Check if this tunnel points to the configured port
+                        if addr and CONFIGURED_PORT in addr:
                             logger.info(
-                                f"✅ Found priority tunnel for port 8766: {public_url}"
+                                f"✅ Found priority tunnel for port {CONFIGURED_PORT}: {public_url}"
                             )
                             priority_urls.append(public_url)
                         else:
@@ -82,7 +85,7 @@ def load_ngrok_urls() -> List[str]:
                 # Use priority URLs first, then regular ones
                 if priority_urls:
                     logger.info(
-                        f"✅ Using {len(priority_urls)} priority tunnels for port 8766"
+                        f"✅ Using {len(priority_urls)} priority tunnels for port {CONFIGURED_PORT}"
                     )
                     urls = priority_urls + urls
 
@@ -269,7 +272,7 @@ def determine_websocket_url(
             logger.warning("⚠️ No ngrok URLs found despite being in LOCAL_DEV_MODE")
 
     # 4. Auto-detect from request (fallback, only for non-local environments)
-    host = client_request.headers.get("host", "localhost:8766")
+    host = client_request.headers.get("host", f"localhost:{CONFIGURED_PORT}")
     scheme = client_request.headers.get("x-forwarded-proto", "http")
     websocket_scheme = "wss" if scheme == "https" else "ws"
     auto_url = f"{websocket_scheme}://{host}"

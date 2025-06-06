@@ -112,9 +112,18 @@ async def main(
     logger.info(f"Using WebSocket URL: {websocket_url}")
 
     # Extract bot_id from the websocket_url if possible
-    # Format is usually: ws://localhost:8766/pipecat/{client_id}
+    # Format is usually: ws://localhost:{PORT}/pipecat/{client_id} or the ngrok URL
     parts = websocket_url.split("/")
-    bot_id = parts[-1] if len(parts) > 3 else "unknown"
+    # Dynamically determine the expected port for localhost URLs
+    expected_local_port = os.getenv("PORT", "7014")
+    if "localhost" in websocket_url and f":{expected_local_port}/pipecat/" in websocket_url:
+        bot_id = parts[-1] if len(parts) > 3 else "unknown"
+    elif "ngrok.io" in websocket_url:
+        # Assume ngrok URL will have the client_id as the last part after /pipecat/
+        bot_id = parts[-1] if len(parts) > 3 and parts[-2] == "pipecat" else "unknown"
+    else:
+        # Fallback for other URL formats or if client_id is not easily extractable
+        bot_id = parts[-1] if len(parts) > 3 else "unknown"
     logger.info(f"Using bot ID: {bot_id}")
 
     # Set sample rate based on streaming_audio_frequency
